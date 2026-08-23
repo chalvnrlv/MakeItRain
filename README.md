@@ -9,8 +9,12 @@ An interactive audiovisual installation and digital playground built in **Unity*
 ## 📸 Demo & Preview
 
 ![Make It Rain Preview]
+<img width="1345" height="757" alt="Screenshot 2026-08-23 203350" src="https://github.com/user-attachments/assets/20f0efd8-1a89-434a-a600-a6d39947ce98" />
+<img width="1342" height="748" alt="Screenshot (846)" src="https://github.com/user-attachments/assets/be92c445-bef2-471a-a3db-2e106de149b1" />
+<img width="1347" height="749" alt="Screenshot (847)" src="https://github.com/user-attachments/assets/86bd9410-efc6-4731-a732-01309c3ed170" />
 
-[![Watch Demo Video]
+
+[![Watch the video](https://img.youtube.com/vi/8SG5WSCDBso/hqdefault.jpg)](https://www.youtube.com/watch?v=8SG5WSCDBso)
 > 📹 *Click above to watch the video demonstration on YouTube!*
 
 ---
