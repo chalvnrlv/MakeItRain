@@ -837,8 +837,8 @@ MonoBehaviour:
   SpawnPrefab: {fileID: 1965290325982691704, guid: 7932dac89a89714438572c4e97b642d1, type: 3}
   MaxSpawn: 10000
   SizeRange: {x: 15, y: 30}
-  MaxSpawnRate: 0.05
-  MinSpawnRate: 0.1
+  MaxSpawnRate: 0.01
+  MinSpawnRate: 0.005
   useMicInput: 0
   sizeBoost: 1.5
 --- !u!1 &1893987113

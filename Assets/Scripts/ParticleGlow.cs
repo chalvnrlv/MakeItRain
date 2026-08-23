@@ -1,45 +1,49 @@
 using UnityEngine;
 using System.Collections;
 
-/// <summary>
-/// Attach to the particle prefab.
-/// When the particle physically contacts another collider (particle-particle
-/// or particle-body), it flashes a glow via material emission.
-///
-/// Requirements:
-///  - The particle's material must support emission (Standard / URP Lit / etc.)
-///  - For visible bloom, enable Post Processing with a Bloom override in your camera.
-/// </summary>
 [RequireComponent(typeof(Renderer))]
 public class ParticleGlow : MonoBehaviour
 {
-    [Header("Glow Color")]
-    [SerializeField] private Color glowColor = new Color(0.4f, 0.8f, 1f);
+    [Header("Color Randomization")]
+    [Tooltip("Min/Max hue range (0-1). Full range = all colors.")]
+    [SerializeField] private float hueMin = 0f;
+    [SerializeField] private float hueMax = 1f;
+    [Tooltip("Saturation — keep high for vivid colors")]
+    [SerializeField] private float satMin = 0.7f;
+    [SerializeField] private float satMax = 1f;
+    [Tooltip("Brightness — keep high so bloom triggers")]
+    [SerializeField] private float valMin = 0.9f;
+    [SerializeField] private float valMax = 1f;
+
+    private Color glowColor;
 
     [Header("Intensity")]
     [Tooltip("Peak HDR emission intensity (>1 triggers bloom)")]
     [SerializeField] private float maxIntensity = 4f;
 
     [Header("Timing")]
-    [SerializeField] private float riseTime  = 0.08f;   // how fast it lights up
-    [SerializeField] private float holdTime  = 0.05f;   // hold at peak
-    [SerializeField] private float fadeTime  = 0.35f;   // how fast it fades
+    [SerializeField] private float riseTime  = 0.08f;  
+    [SerializeField] private float holdTime  = 0.05f;  
+    [SerializeField] private float fadeTime  = 0.35f;  
 
     private Material mat;
     private Coroutine glowRoutine;
 
-    // ─── Lifecycle ────────────────────────────────────────────────────────────
-
     void Awake()
     {
-        // renderer.material creates a per-instance copy so particles glow independently
         mat = GetComponent<Renderer>().material;
         mat.EnableKeyword("_EMISSION");
     }
 
     void OnEnable()
     {
-        // Reset emission every time the particle is pulled from the pool
+        glowColor = Random.ColorHSV(hueMin, hueMax, satMin, satMax, valMin, valMax);
+
+        if (mat.HasProperty("_BaseColor"))
+            mat.SetColor("_BaseColor", glowColor);
+        else
+            mat.SetColor("_Color", glowColor);
+
         SetEmission(0f);
     }
 
@@ -53,36 +57,30 @@ public class ParticleGlow : MonoBehaviour
         SetEmission(0f);
     }
 
-    // ─── Collision hooks ─────────────────────────────────────────────────────
 
-    // Particle ↔ Particle  (Rigidbody2D + Collider2D, non-trigger)
     void OnCollisionEnter2D(Collision2D _) => TriggerGlow();
 
-    // Particle ↔ Body collider  (if PolygonCollider2D is set as trigger)
     void OnTriggerEnter2D(Collider2D other)
     {
-        // Ignore the DestroyZone — the particle is about to be disabled anyway
         if (other.CompareTag("DestroyZone")) return;
         TriggerGlow();
     }
 
-    // ─── Glow logic ───────────────────────────────────────────────────────────
 
     public void TriggerGlow()
     {
+        if (!gameObject.activeInHierarchy) return;
+
         if (glowRoutine != null) StopCoroutine(glowRoutine);
         glowRoutine = StartCoroutine(GlowCoroutine());
     }
 
     private IEnumerator GlowCoroutine()
     {
-        // Rise
         yield return LerpEmission(0f, maxIntensity, riseTime);
 
-        // Hold at peak
         yield return new WaitForSeconds(holdTime);
 
-        // Fade out
         yield return LerpEmission(maxIntensity, 0f, fadeTime);
 
         glowRoutine = null;

@@ -1,10 +1,5 @@
 using UnityEngine;
 
-/// <summary>
-/// Reads loudness from the default microphone every frame.
-/// Access the current 0-1 normalized loudness via MicInput.Loudness.
-/// Attach this to any persistent GameObject (e.g. an empty "AudioManager").
-/// </summary>
 public class MicInput : MonoBehaviour
 {
     [Header("Microphone Settings")]
@@ -17,7 +12,6 @@ public class MicInput : MonoBehaviour
     [Tooltip("How quickly the loudness value smooths out (higher = snappier)")]
     [SerializeField] private float smoothSpeed = 15f;
 
-    /// <summary>Normalized loudness in the range [0, 1]. Read this from other scripts.</summary>
     public static float Loudness { get; private set; }
 
     private AudioClip micClip;
@@ -33,7 +27,6 @@ public class MicInput : MonoBehaviour
         }
 
         micDevice = Microphone.devices[0];
-        // Record a looping 1-second clip — we only ever read recent samples from it
         micClip = Microphone.Start(micDevice, true, 1, AudioSettings.outputSampleRate);
         Debug.Log($"[MicInput] Using microphone: {micDevice}");
     }
